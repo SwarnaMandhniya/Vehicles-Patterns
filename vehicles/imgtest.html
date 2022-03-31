@@ -1,0 +1,170 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/2.0.0-beta.7/fabric.min.js"></script>
+
+<div>
+  <canvas id="fCanvas" width="400" height="400"></canvas>
+</div>
+<a id="downloadLnk" download="YourFileName.jpg">Download as image</a>
+<script>
+    const canvas = new fabric.Canvas('fCanvas');
+fabric.Image.fromURL('https://freemediatools.com/img/profile.jpg', 
+    function(img) {
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+          scaleX: canvas.width / img.width,
+          scaleY: canvas.height / img.height
+        });
+    }, { crossOrigin: 'Anonymous' });
+
+function download() {
+   var dt = canvas.toDataURL('image/jpeg');
+   this.href = dt;
+};
+downloadLnk.addEventListener('click', download, false);
+</script>
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Static Tee Designer</title>
+        <style>
+            .drawing-area{
+                position: absolute;
+                top: 60px;
+                left: 122px;
+                z-index: 10;
+                width: 200px;
+                height: 400px;
+            }
+
+            .canvas-container{
+                width: 200px; 
+                height: 400px; 
+                position: relative; 
+                user-select: none;
+            }
+
+            #tshirt-div{
+                width: 452px;
+                height: 548px;
+                position: relative;
+                background-color: #fff;
+            }
+
+            #canvas{
+                position: absolute;
+                width: 200px;
+                height: 400px; 
+                left: 0px; 
+                top: 0px; 
+                user-select: none; 
+                cursor: default;
+            }
+            img#tshirt-backgroundpicture {
+                max-width: 100%;
+                max-height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Create the container of the tool -->
+        <div id="tshirt-div">
+            <!-- 
+                Initially, the image will have the background tshirt that has transparency
+                So we can simply update the color with CSS or JavaScript dinamically
+            -->
+            <img id="tshirt-backgroundpicture" src=""/>
+
+            <div id="drawingArea" class="drawing-area">					
+                <div class="canvas-container">
+                    <canvas id="tshirt-canvas" width="200" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- The select that will allow the user to pick one of the static designs -->
+        <br>
+        <label for="tshirt-design">T-Shirt Design:</label>
+        <select id="tshirt-design">
+            <option value="">Select one of our designs ...</option>
+            <option value="https://cdn.ourcodeworld.com/public-media/gallery/gallery-5d5b0e95d294c.png">Batman</option>
+        </select>
+
+
+        
+
+        <select id="newtshirt-design">
+            <option value="">New desgin.</option>
+            <option value="https://cdn.ourcodeworld.com/public-media/gallery/gallery-5d5afd3f1c7d6.png">Img set</option>
+            <option value="public/testing/black.jpg">blak imag</option>
+            <option value="public/testing/9088.png">Img set</option>
+        </select>
+
+        <!-- The Select that allows the user to change the color of the T-Shirt -->
+        <br><br>
+        <p><a id='downloadPreview' href="javascript:void(0)"> Download Image </a></p>
+        <!-- Include Fabric.js in the page -->
+        <script src="public/assets/js/fabric.min.js"></script>
+
+        <script>
+            let canvas = new fabric.Canvas('tshirt-canvas');
+
+            function updateTshirtImage(imageURL){
+                // If the user doesn't pick an option of the select, clear the canvas
+                if(!imageURL){
+                    canvas.clear();
+                }
+
+                // Create a new image that can be used in Fabric with the URL
+                fabric.Image.fromURL(imageURL, function(img) {
+                    // Define the image as background image of the Canvas
+                    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                        // Scale the image to the canvas size
+                        scaleX: canvas.width / img.width,
+                        scaleY: canvas.height / img.height
+                    });
+                });
+            }
+            
+            // Update the TShirt color according to the selected color by the user
+            document.getElementById("newtshirt-design").addEventListener("change", function(){
+                var select = document.getElementById('newtshirt-design');
+                var value = select.options[select.selectedIndex].value;
+                document.getElementById("tshirt-backgroundpicture").src = value ;
+               
+                
+            }, false);
+
+            // Update the TShirt color according to the selected color by the user
+            document.getElementById("tshirt-design").addEventListener("change", function(){
+
+                // Call the updateTshirtImage method providing as first argument the URL
+                // of the image provided by the select
+                updateTshirtImage(this.value);
+            }, false);
+
+            
+            var downloadCanvas =    function(){
+
+                /*console.log(canvas.toSVG());
+                return;*/
+                var link = document.createElement("a");
+                var imgData = canvas.toDataURL({    format: 'png',
+                    multiplier: 10});
+                var strDataURI = imgData.substr(22, imgData.length);
+                var blob = dataURLtoBlob(imgData);
+                var objurl = URL.createObjectURL(blob);
+
+                link.download = "image-"+( parseInt( Math.random(10) * 10000000 ) )+".png";
+
+                link.href = objurl;
+
+                link.click();
+            }
+
+            document.getElementById("downloadPreview").addEventListener('click', downloadCanvas, false);
+
+            
+        </script>
+    </body>
+</html>
